@@ -1,0 +1,100 @@
+﻿@using ReadDataJsonData.Controllers;
+@model List<Form>
+@{
+	ViewData["Title"] = "Home Page";
+}
+
+
+@using (Html.BeginForm("SaveForm", "Home", FormMethod.Post))
+{
+	<div class="container justify-content-center align-items-center main-container">
+		@foreach (Form form in Model)
+		{
+
+			<div class=" row">
+				<div class="col-md-5">
+					<div class="form-group gap-5">
+						<label>@Html.Label(form.label)</label> <br>
+						@if (form.type == "text")
+						{
+							<input id="txtName" name="Name" type=@form.type placeholder="@form.label" class="form-control" /> <br />
+						}
+						@if (form.options != null && form.type == "radio")
+						{
+							@foreach (var option in form.options)
+							{
+								<label>
+									@Html.RadioButton("radioGroup", option,  new { @class="form-check-input", id = "redioGender" + option , name = "gender",onchange ="g" })
+									@option
+								</label>
+								<br />
+							}
+						}
+						@if (form.options != null && form.type == "checkbox")
+						{
+							@foreach (var option in form.options)
+							{
+								<label>
+									@Html.CheckBox(option ,new {@class="form-check-input", id = option,name = "chkhobbies"})
+									@option
+								</label>
+								<br />
+							}
+						}
+					</div>
+				</div>
+			</div>
+		}
+		<button class="btn btn-dark" id="Save" type="submit">submit</button>
+	</div>
+
+}
+<style>
+	.main-container {
+		border:1px solid black;
+		height:800px;
+		width:100%;
+	}
+
+</style>
+
+<script>
+
+	$(document).ready(function () {
+		var selectedValueOfGender;
+		$("input").change(function (event) {
+			if (event.target.type == "radio") {
+				selectedValueOfGender = event.target.value;
+			}
+			return selectedValueOfGender;
+		});
+		$("#Save").on("click", function () {
+			debugger;
+			var txtName = $("#txtName").val();
+			var arr = [];
+			$("input[type=checkbox]").each(function () {
+				var self = $(this);
+				if (self.is(':checked')) {
+					arr.push(self.attr("id"));
+				}
+			});
+			$.ajax({
+				type: "POST",
+				url: "/Home/SaveForm",
+				data: {
+					Name: txtName,
+					Gender: selectedValueOfGender,
+					Hobbies: arr
+				},
+				success: function (response) {
+					alert(response);
+				},
+				error: function (request, status, error) {
+					alert(data);
+				}
+			});
+		});
+	});
+
+	
+</script>
